@@ -66,11 +66,11 @@ module ActiveRecord
         body =
           if adapter_name.starts_with?('postgresql')
             lambda { |value|
-              where("unaccent(#{attr}) ILIKE unaccent(?)", "%#{value}%")
+              where("unaccent(#{attr}) ILIKE unaccent(?)", "%#{sanitize_sql_like(value)}%")
             }
           else
             lambda { |value|
-              where("#{attr} LIKE ?", "%#{value}%")
+              where("#{attr} LIKE ?", "%#{sanitize_sql_like(value)}%")
             }
           end
 

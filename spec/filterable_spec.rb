@@ -23,13 +23,6 @@ RSpec.describe ActiveRecord::Filterable do
   end
 
   context 'when use default operator' do
-    it 'creates correct selector' do
-      expect(City.filter(code: :code1).to_sql).to eq(
-        "SELECT \"cities\".* FROM \"cities\" WHERE \"cities\".\"active\" = 't' AND" \
-        " \"cities\".\"code\" = 'code1'"
-      )
-    end
-
     context 'when exact matching is used' do
       before do
         City.create(code: :code1)
@@ -143,11 +136,11 @@ RSpec.describe ActiveRecord::Filterable do
         expect(City.filter(name_normalized: 'france').first.name).to eq('frAnce')
       end
 
-      it 'filters ignoring special characters' do
+      it 'filters ignoring special characters', sqlite: false do
         expect(City.filter(name_normalized: '%').first.name).to eq('_russian%')
       end
 
-      xit 'filters ignoring accents' do
+      it 'filters ignoring accents', sqlite: false do
         expect(City.filter(name_normalized: 'italy').first.name).to eq('itály')
       end
     end
@@ -191,17 +184,13 @@ RSpec.describe ActiveRecord::Filterable do
   end
 
   context 'when use "or" operator' do
-    it 'creates correct selector' do
-      expect(City.filter({code: :code1, people: 2}, 'or').to_sql).to eq(
-        "SELECT \"cities\".* FROM \"cities\" WHERE \"cities\".\"active\" = 't' AND" \
-        " (\"cities\".\"code\" = 'code1' OR \"cities\".\"people\" > 2)"
-      )
+    before do
+      City.create(name: 'city1', people: 100)
+      City.create(name: 'city2', people: 2000)
     end
 
     it 'filters' do
-      City.create(name: 'city1', people: 100)
-      City.create(name: 'city2', people: 2000)
-      expect(City.filter({name: 'city1', people: '2000', active: false}, 'or').count).to eq(1)
+      expect(City.filter({name: 'city1', people: 500}, 'or').count).to eq(2)
     end
   end
 end

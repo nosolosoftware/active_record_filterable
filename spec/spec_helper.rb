@@ -6,10 +6,11 @@ require 'active_record'
 
 require 'active_record_filterable'
 
-ActiveRecord::Base.establish_connection(
-  adapter: 'sqlite3', database: File.expand_path("#{__dir__}/../test.sqlite3"),
-  timeout: 5000
+db_config = YAML.safe_load(
+  File.open("#{__dir__}/support/database_#{ENV['DATABASE'] || 'sqlite'}.yml")
 )
+
+ActiveRecord::Base.establish_connection(db_config['test'])
 
 ActiveRecord::Base.connection.create_table(:cities, force: true, collate: :nocase) do |t|
   t.boolean :active, default: true
@@ -21,7 +22,7 @@ ActiveRecord::Base.connection.create_table(:cities, force: true, collate: :nocas
 end
 ActiveRecord::Base.connection.create_table(:votes, force: true)
 
-ActiveRecord::Base.logger = Logger.new(STDOUT)
+# ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -93,4 +94,6 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  config.filter_run_excluding(sqlite: ENV['DATABASE'] != 'sqlite')
 end

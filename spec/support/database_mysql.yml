@@ -1,0 +1,5 @@
+test:
+  adapter: mysql2
+  database: active_record_filterable_test
+  pool: 5
+  timeout: 5000

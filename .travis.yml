@@ -1,8 +1,25 @@
 sudo: false
 language: ruby
+
+cache:
+  directories:
+    - vendor/bundle
+
 rvm:
   - 2.5.1
-before_install: gem install bundler -v 1.16.1
+
+bundler_args: --jobs 3 --retry 3
+
+env:
+  - DATABASE=postgresql
+  - DATABASE=sqlite
+  - DATABASE=mysql
+before_script:
+  - sh -c "if [ '$DATABASE' = 'postgresql' ]; then psql -c 'CREATE DATABASE active_record_filterable_test;' -U postgres; fi"
+  - sh -c "if [ '$DATABASE' = 'postgresql' ]; then psql -d active_record_filterable_test -c 'CREATE EXTENSION unaccent;' -U postgres; fi"
+  - sh -c "if [ '$DATABASE' = 'mysql' ]; then mysql -e 'CREATE DATABASE IF NOT EXISTS active_record_filterable_test;'; fi"
+
+script: bundle exec rspec
 
 gemfile:
   - Gemfile
