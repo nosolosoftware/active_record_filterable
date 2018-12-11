@@ -22,6 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'sqlite3'
-  spec.add_dependency 'activerecord', ['>= 3.0', '<= 5.2']
-  spec.add_dependency 'activesupport', ['>= 3.0', '<= 5.2']
+  spec.add_dependency 'activerecord', ['>= 3.0', '< 6.0']
+  spec.add_dependency 'activesupport', ['>= 3.0', '< 6.0']
 end
