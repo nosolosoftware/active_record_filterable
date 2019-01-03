@@ -6,7 +6,7 @@ cache:
     - vendor/bundle
 
 rvm:
-  - 2.5.1
+  - 2.6.0
 
 bundler_args: --jobs 3 --retry 3
 
