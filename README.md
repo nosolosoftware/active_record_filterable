@@ -81,7 +81,7 @@ end
 
 #### Normalized values
 
-Searches without considering accents are also supported. 
+Searches without considering accents are also supported.
 
 ```ruby
   filter_by_normalized :name
