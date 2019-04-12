@@ -30,12 +30,12 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'filters' do
-        expect(City.filter(code: :code1).count).to eq(1)
-        expect(City.filter(code: :code1).first.code).to eq('code1')
+        expect(City.filtrate(code: :code1).count).to eq(1)
+        expect(City.filtrate(code: :code1).first.code).to eq('code1')
       end
 
       it 'doesn\'t find anything with partial match' do
-        expect(City.filter(name: :city).count).to eq(0)
+        expect(City.filtrate(name: :city).count).to eq(0)
       end
     end
 
@@ -47,11 +47,11 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'respects default_scope' do
-        expect(City.filter(nil).count).to eq(2)
+        expect(City.filtrate(nil).count).to eq(2)
       end
 
       it 'ignores filter' do
-        expect(City.filter(nil).count).to eq(2)
+        expect(City.filtrate(nil).count).to eq(2)
       end
     end
 
@@ -63,11 +63,11 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'should respect default_scope' do
-        expect(City.filter(invalid: 'val').count).to eq(2)
+        expect(City.filtrate(invalid: 'val').count).to eq(2)
       end
 
       it 'should ignore filter' do
-        expect(City.filter(invalid: 'val').count).to eq(2)
+        expect(City.filtrate(invalid: 'val').count).to eq(2)
       end
     end
 
@@ -81,11 +81,11 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'receives all the values' do
-        expect(City.filter(people_range: [500, 1000]).count).to eq(3)
+        expect(City.filtrate(people_range: [500, 1000]).count).to eq(3)
       end
 
       it 'does not break compatibility with filters receiving only one param as array' do
-        expect(City.filter(people_in: [500, 100]).count).to eq(2)
+        expect(City.filtrate(people_in: [500, 100]).count).to eq(2)
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'applies filter' do
-        expect(City.filter(people: '').count).to eq(0)
+        expect(City.filtrate(people: '').count).to eq(0)
       end
     end
 
@@ -107,7 +107,7 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'filters using a query' do
-        expect(City.unscoped.filter(active: false).count).to eq(1)
+        expect(City.unscoped.filtrate(active: false).count).to eq(1)
       end
     end
 
@@ -118,8 +118,8 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'filters' do
-        expect(City.filter(people: 500).count).to eq(1)
-        expect(City.filter(people: 500).first.people).to eq(1000)
+        expect(City.filtrate(people: 500).count).to eq(1)
+        expect(City.filtrate(people: 500).first.people).to eq(1000)
       end
     end
 
@@ -132,16 +132,16 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'filters ignoring upcase' do
-        expect(City.filter(name_normalized: 'spain').first.name).to eq('spaIn')
-        expect(City.filter(name_normalized: 'france').first.name).to eq('frAnce')
+        expect(City.filtrate(name_normalized: 'spain').first.name).to eq('spaIn')
+        expect(City.filtrate(name_normalized: 'france').first.name).to eq('frAnce')
       end
 
       it 'filters ignoring special characters', sqlite: false do
-        expect(City.filter(name_normalized: '%').first.name).to eq('_russian%')
+        expect(City.filtrate(name_normalized: '%').first.name).to eq('_russian%')
       end
 
       it 'filters ignoring accents', sqlite: false do
-        expect(City.filter(name_normalized: 'italy').first.name).to eq('itály')
+        expect(City.filtrate(name_normalized: 'italy').first.name).to eq('itály')
       end
     end
 
@@ -154,7 +154,7 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'is maintained' do
-        expect(City.where(name: '2').filter(nil).count).to eq(1)
+        expect(City.where(name: '2').filtrate(nil).count).to eq(1)
       end
     end
 
@@ -166,8 +166,8 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'respects previous selector' do
-        expect(City.where(name: 'city2').filter(people: '500').count).to eq(1)
-        expect(City.where(name: 'city2').filter(people: '500').first.name).to eq('city2')
+        expect(City.where(name: 'city2').filtrate(people: '500').count).to eq(1)
+        expect(City.where(name: 'city2').filtrate(people: '500').first.name).to eq('city2')
       end
     end
   end
@@ -179,7 +179,7 @@ RSpec.describe ActiveRecord::Filterable do
     end
 
     it 'filters' do
-      expect(City.filter({name: 'city1', people: '2000'}, 'and').count).to eq(0)
+      expect(City.filtrate({name: 'city1', people: '2000'}, 'and').count).to eq(0)
     end
   end
 
@@ -190,7 +190,7 @@ RSpec.describe ActiveRecord::Filterable do
     end
 
     it 'filters' do
-      expect(City.filter({name: 'city1', people: 500}, 'or').count).to eq(2)
+      expect(City.filtrate({name: 'city1', people: 500}, 'or').count).to eq(2)
     end
   end
 end
