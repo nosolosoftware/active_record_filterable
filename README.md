@@ -29,19 +29,18 @@ class City < ActiveRecord::Base
   field :people
 
   filter_by(:name)
-  filter_by(:people, ->(value) { where(:people.gt => value) })
+  filter_by(:people, ->(value) { where(City.arel_table[:people].gt(value)) })
   filter_by(:people_range, (lambda do |range_start, range_end|
-    where(:people.lte => range_end,
-          :people.gte => range_start)
+    where(people: range_start..range_end)
   end))
 end
 
 City.create(name: 'city1', people: 100)
 City.create(name: 'city2', people: 1000)
-City.filter({name: 'city'}).count # => 2
-City.filter({name: 'city1'}).count # => 1
-City.filter({name: ''}).count # => 0
-City.filter({people: 500}) # => 1
+City.filtrate({name: 'city'}).count # => 2
+City.filtrate({name: 'city1'}).count # => 1
+City.filtrate({name: ''}).count # => 0
+City.filtrate({people: 500}) # => 1
 ```
 
 #### Operator
@@ -52,8 +51,8 @@ You can specify selector operator:
 * or
 
 ```ruby
-City.filter({name: 'city1', people: 1000}, 'and').count # => 0
-City.filter({name: 'city1', people: 1000}, 'or').count # => 1
+City.filtrate({name: 'city1', people: 1000}, 'and').count # => 0
+City.filtrate({name: 'city1', people: 1000}, 'or').count # => 1
 ```
 
 #### Range
@@ -61,7 +60,7 @@ City.filter({name: 'city1', people: 1000}, 'or').count # => 1
 Searches with more than one param is also available:
 
 ```ruby
-City.filter(people_range: [500, 1000]).count # => 1
+City.filtrate(people_range: [500, 1000]).count # => 1
 ```
 
 #### Rails controller
@@ -69,7 +68,7 @@ City.filter(people_range: [500, 1000]).count # => 1
 ```ruby
 class CitiesController
   def index
-    respond_with City.filter(filter_params)
+    respond_with City.filtrate(filter_params)
   end
 
   private
@@ -90,7 +89,7 @@ Searches without considering accents are also supported.
 enables to do sth like:
 
   ```ruby
-  City.filter(name_normalized: 'text with accents')
+  City.filtrate(name_normalized: 'text with accents')
   ```
 
 It also depends on which adapter you are using.
