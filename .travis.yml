@@ -23,3 +23,7 @@ script: bundle exec rspec
 
 gemfile:
   - Gemfile
+
+services:
+  - mysql
+  - postgresql

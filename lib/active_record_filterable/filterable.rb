@@ -37,7 +37,7 @@ module ActiveRecord
           end
         end
 
-        criteria == self ? none : merge(criteria)
+        merge(criteria)
       end
 
       def scope(name, scope_options, &block)

@@ -35,7 +35,19 @@ RSpec.describe ActiveRecord::Filterable do
       end
 
       it 'doesn\'t find anything with partial match' do
-        expect(City.filtrate(name: :city).count).to eq(0)
+        expect(City.filtrate(code: :code).count).to eq(0)
+      end
+    end
+
+    context 'when filter is invalid' do
+      before do
+        City.create(code: :code1)
+        City.create(code: :code2)
+      end
+
+      it 'ignore filter' do
+        expect(City.filtrate(code: :code1, invalid: 'xxx').count).to eq(1)
+        expect(City.filtrate(invalid: 'xxx').count).to eq(2)
       end
     end
 
@@ -123,7 +135,7 @@ RSpec.describe ActiveRecord::Filterable do
       end
     end
 
-    context 'when partial matching is used' do
+    context 'when normalize matching is used' do
       before do
         City.create(name: 'spaIn')
         City.create(name: 'frAnce')
@@ -145,7 +157,7 @@ RSpec.describe ActiveRecord::Filterable do
       end
     end
 
-    context 'when filter is applied on a scope' do
+    context 'when is applied in query' do
       before do
         City.create(name: '2', people: 100)
         City.create(name: '1', people: 500)
@@ -155,19 +167,14 @@ RSpec.describe ActiveRecord::Filterable do
 
       it 'is maintained' do
         expect(City.where(name: '2').filtrate(nil).count).to eq(1)
-      end
-    end
-
-    context 'when is applied in query' do
-      before do
-        City.create(name: 'city1', people: 100)
-        City.create(name: 'city2', people: 1000)
-        City.create(name: 'city3', people: 2000)
+        expect(City.where(name: '2').filtrate(nil).first.name).to eq('2')
+        expect(City.where(name: '1').filtrate(people: 900).count).to eq(2)
       end
 
-      it 'respects previous selector' do
-        expect(City.where(name: 'city2').filtrate(people: '500').count).to eq(1)
-        expect(City.where(name: 'city2').filtrate(people: '500').first.name).to eq('city2')
+      context 'when filter is invalid' do
+        it 'ignore filter' do
+          expect(City.where(name: '1').filtrate(invalid: 900).count).to eq(3)
+        end
       end
     end
   end
