@@ -41,6 +41,7 @@ City.filtrate({name: 'city'}).count # => 2
 City.filtrate({name: 'city1'}).count # => 1
 City.filtrate({name: ''}).count # => 0
 City.filtrate({people: 500}) # => 1
+City.filtrate({invalid: 'x'}) # => 2 (is ignored)
 ```
 
 #### Operator
