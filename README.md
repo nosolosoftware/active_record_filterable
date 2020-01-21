@@ -25,9 +25,6 @@ Or install it yourself as:
 class City < ActiveRecord::Base
   include ActiveRecord::Filterable
 
-  field :name
-  field :people
-
   filter_by(:name)
   filter_by(:people, ->(value) { where(City.arel_table[:people].gt(value)) })
   filter_by(:people_range, (lambda do |range_start, range_end|
