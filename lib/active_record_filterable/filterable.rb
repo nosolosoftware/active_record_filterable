@@ -37,7 +37,7 @@ module ActiveRecord
           end
         end
 
-        merge(criteria)
+        self.and(criteria)
       end
 
       def scope(name, scope_options, &block)
@@ -64,7 +64,7 @@ module ActiveRecord
         adapter_name = ActiveRecord::Base.connection.adapter_name.downcase
 
         body =
-          if adapter_name.starts_with?('postgresql')
+          if adapter_name.start_with?('postgresql')
             lambda { |value|
               where("unaccent(#{attr}) ILIKE unaccent(?)", "%#{sanitize_sql_like(value)}%")
             }
