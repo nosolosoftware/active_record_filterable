@@ -176,6 +176,12 @@ RSpec.describe ActiveRecord::Filterable do
           expect(City.where(name: '1').filtrate(invalid: 900).count).to eq(3)
         end
       end
+
+      context 'when merging conditions on the same column' do
+        it 'maintains both conditions' do
+          expect(City.where(name: '1').filtrate(name: '2').count).to eq(0)
+        end
+      end
     end
   end
 
